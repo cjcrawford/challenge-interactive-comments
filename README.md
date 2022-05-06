@@ -163,4 +163,4 @@ I used the provided sketch document to try to match everything pixel perfect. In
 
 ## Author
 
-- Frontend Mentor - [@@cjcrawford](https://www.frontendmentor.io/profile/cjcrawford)
+- Frontend Mentor - [@cjcrawford](https://www.frontendmentor.io/profile/cjcrawford)
