@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { watch } from "vue";
+import { watch, onBeforeUnmount } from "vue";
 
 export default {
   name: "Modal",
@@ -41,6 +41,11 @@ export default {
           document.querySelector("body").classList.remove("modal--active");
         }
       }
+    );
+
+    // parent gets deleted this component gets removed and watcher never fires falsy show value
+    onBeforeUnmount(() =>
+      document.querySelector("body").classList.remove("modal--active")
     );
   },
 };

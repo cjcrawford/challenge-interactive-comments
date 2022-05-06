@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav :id="`vote:${comment.id}`">
     <button
       :disabled="
         !isLoggedIn || isCurrentUserComment || userVoteScore === 1 || isLoading

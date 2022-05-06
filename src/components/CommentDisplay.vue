@@ -1,6 +1,6 @@
 <template>
   <section>
-    <article class="card comment">
+    <div class="card comment">
       <CommentVote class="comment__vote" :comment="comment" />
 
       <div class="comment__content">
@@ -191,7 +191,7 @@
           </template>
         </template>
       </div>
-    </article>
+    </div>
 
     <transition name="fade">
       <CommentForm
