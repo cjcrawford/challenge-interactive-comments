@@ -2,7 +2,8 @@
   <form class="card comment-form" @submit.prevent="handleSubmit">
     <img class="avatar" :src="user.image.png" alt="avatar" />
     <textarea
-      id="reply"
+      :id="formId"
+      aria-label="Add a comment"
       placeholder="Add a comment ..."
       v-model="commentContent"
     ></textarea>
@@ -18,6 +19,7 @@
 
 <script>
 import { ref } from "vue";
+import { v4 as uuid } from "uuid";
 import { user } from "../services/useAuth.js";
 import { addComment, addReply } from "../services/useComments.js";
 
@@ -36,6 +38,7 @@ export default {
   setup(props, { emit }) {
     const commentContent = ref("");
     const isLoading = ref(false);
+    const formId = uuid();
 
     if (props.comment && props.comment?.user?.username) {
       commentContent.value = `@${props.comment.user.username} `;
@@ -65,6 +68,7 @@ export default {
     return {
       commentContent,
       user,
+      formId,
       isLoading,
       handleSubmit,
     };

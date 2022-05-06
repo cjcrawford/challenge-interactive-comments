@@ -6,7 +6,7 @@
       "
       type="button"
       class="button button--plus"
-      aria-labelledby="up vote"
+      aria-label="up vote"
       @click="handleVote(1)"
     >
       <svg viewbox="0 0 11 11" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +22,7 @@
       "
       type="button"
       class="button button--minus"
-      aria-labelledby="down vote"
+      aria-label="down vote"
       @click="handleVote(-1)"
     >
       <svg class="minus" viewbox="0 0 11 5" xmlns="http://www.w3.org/2000/svg">

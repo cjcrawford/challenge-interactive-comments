@@ -1,14 +1,19 @@
-import { reactive, computed } from "vue";
+import { reactive } from "vue";
+import { v4 as uuid } from "uuid";
 import { user, isLoggedIn } from "./useAuth.js";
 import { mockApiCall } from "./useAsync.js";
 import { replaceFirstUsername } from "../util/sanitize.js";
 import commentData from "../data.json";
 
+const useLocalStorage = true; // dev toggle flag
+
 const localData = localStorage.getItem("comments");
 
 export const comments = reactive(
-  localData ? JSON.parse(localData) : commentData.comments
+  localData && useLocalStorage ? JSON.parse(localData) : commentData.comments
 );
+
+/* Switching to uuid for less complexity
 
 const nextCommentId = computed(() => {
   const maxId = comments.reduce((currentHighestCommentId, comment) => {
@@ -23,6 +28,8 @@ const nextCommentId = computed(() => {
 
   return maxId + 1;
 });
+
+*/
 
 const persistLocalStorage = () => {
   localStorage.setItem("comments", JSON.stringify(comments));
@@ -43,15 +50,13 @@ export const addReply = async (content, comment, parent) => {
 
   // shape the reply (IRL the API would probably do this)
   const newReply = {
-    id: nextCommentId.value,
+    id: uuid(),
     content: replaceFirstUsername(content, comment.user.username),
     createdAt: "just now",
     score: 1,
     replyingTo: comment.user.username,
     user,
   };
-
-  console.log(newReply);
 
   // @todo: API call
   await mockApiCall();
@@ -75,11 +80,11 @@ export const addComment = async (content) => {
 
   // shape the comment (IRL the API would probably do this)
   const newComment = {
-    id: nextCommentId.value,
+    id: uuid(),
     content,
     replies: [],
     createdAt: "just now",
-    score: 1,
+    score: 0,
     user,
   };
 

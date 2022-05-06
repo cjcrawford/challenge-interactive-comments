@@ -1,22 +1,29 @@
 <template>
-  <section class="comments-container">
-    <template v-for="comment in comments" :key="comment.id">
-      <CommentDisplay :comment="comment" />
-
-      <template v-if="comment.replies?.length">
-        <div class="comment__replies">
+  <TransitionGroup name="fade" tag="section" class="comments-container">
+    <CommentDisplay
+      v-for="comment in comments"
+      :key="comment.id"
+      :comment="comment"
+    >
+      <template #replies>
+        <TransitionGroup
+          v-if="comment.replies?.length"
+          name="fade"
+          tag="section"
+          class="comment__replies"
+        >
           <CommentDisplay
             v-for="reply in comment.replies"
             :key="`comment:${comment.id}:${reply.id}`"
             :comment="reply"
             :parent="comment"
           />
-        </div>
+        </TransitionGroup>
       </template>
-    </template>
+    </CommentDisplay>
+  </TransitionGroup>
 
-    <CommentForm />
-  </section>
+  <CommentForm class="comments-container" />
 </template>
 
 <script>

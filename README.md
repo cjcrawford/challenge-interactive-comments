@@ -10,11 +10,8 @@ This is a solution to the [Interactive comments section challenge on Frontend Me
   - [Links](#links)
 - [My process](#my-process)
   - [Built with](#built-with)
-  - [What I learned](#what-i-learned)
-  - [Continued development](#continued-development)
-  - [Useful resources](#useful-resources)
+  - [What I learned](#what-i-learned)  
 - [Author](#author)
-- [Acknowledgments](#acknowledgments)
 
 ## Overview
 
@@ -30,144 +27,140 @@ Users should be able to:
 
 ### Screenshot
 
-![](./Screenshot.png)
-
-# Front-end Style Guide
-
-## Layout
-
-The designs were created to the following widths:
-
-- Mobile: 375px
-- Desktop: 1440px
-
-## Colors
-
-### Primary
-
-- Moderate blue: hsl(238, 40%, 52%)
-- Soft Red: hsl(358, 79%, 66%)
-- Light grayish blue: hsl(239, 57%, 85%)
-- Pale red: hsl(357, 100%, 86%)
-
-### Neutral
-
-- Dark blue: hsl(212, 24%, 26%)
-- Grayish Blue: hsl(211, 10%, 45%)
-- Light gray: hsl(223, 19%, 93%)
-- Very light gray: hsl(228, 33%, 97%)
-- White: hsl(0, 0%, 100%)
-
-## Typography
-
-### Body Copy
-
-- Font size (paragraph): 16px
-
-### Font
-
-- Family: [Rubik](https://fonts.google.com/specimen/Rubik)
-- Weights: 400, 500, 700
+![Screen shot of solution](./Screenshot.png)
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://github.com/cjcrawford/challenge-interactive-comments)
-- Live Site URL: [Add live site URL here](https://challenge-interactive-comments.cjcrawford.com)
+- [Solution URL](https://github.com/cjcrawford/challenge-interactive-comments)
+- [Live Site URL](https://interactive-comments.cjcrawford.com)
 
 ## My process
 
 ### Built with
 
 - Semantic HTML5 markup
-- CSS custom properties
-- Flexbox
-- CSS Grid
+- CSS with a splash of BEM
 - Mobile-first workflow
-- [React](https://reactjs.org/) - JS library
-- [Next.js](https://nextjs.org/) - React framework
-- [Styled Components](https://styled-components.com/) - For styles
-
-**Note: These are just examples. Delete this note and replace the list above with your own choices**
+- [VueJS](https://vuejs.org/) - Vue framework
 
 ### What I learned
 
-Use this section to recap over some of your major learnings while working through this project. Writing these out and providing code samples of areas you want to highlight is a great way to reinforce your own knowledge.
+CSS `order` property and `flex-basis` was essential for positioning the comment buttons on desktop vs mobile.
 
-To see how you can add code snippets, see below:
-
-```html
-<h1>Some HTML code I'm proud of</h1>
-```
 ```css
-.proud-of-this-css {
-  color: papayawhip;
+.comment__toolbar {
+  order: 3;
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  justify-content: end;
+}
+
+@media (min-width: 768px) {
+    .comment__toolbar {
+        order: unset;
+        position: absolute;
+        /** this could easily be top: 19px; leaving it complex for future variable upgrade
+            (card top padding - ( 1/2 button padding )) 
+        */
+        top: calc(24px - (10px / 2));
+        /** this could easily be right: 18px; leaving it complex for future variable upgrade
+            (card right padding - ( 1/2 button padding )) 
+        */
+        right: calc(24px - (12px / 2));
+    }
 }
 ```
+
+Firefox and safari have quite different native form element styles. Not using a framework with a reset or normalize like Tailwind or Bootstrap, I learned how difficult it is to create your own styles for form elements.
+
+```css
+textarea {
+  border-radius: 8px;
+  padding: 12px 24px;
+  background-color: var(--theme-white);
+  color: var(--color-text);
+  border: 1px solid var(--theme-light-gray);
+  min-height: 96px;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  caret-color: var(--theme-moderate-blue);
+  border-block: 1px solid var(--theme-light-gray);
+}
+
+textarea:active {
+  border-color: var(--theme-moderate-blue);
+}
+
+textarea,
+textarea::placeholder {
+  font-size: 16px;
+  line-height: 24px;
+  font-family: 'Rubik', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+textarea::placeholder {
+  color: var(--theme-grayish-blue);
+}
+```
+
+Keeping the textarea inside its `flex` container when manually resizing it was a little tricky until I discovered `min-width: 0`. Thanks CSS Tricks!
+
+```css
+  .comment__content {
+    min-width: 0;    
+  }
+```
+
+Since the data structure and design does not allow more than one level of nested replies, the javascript and composition seemed overly complicated. I think I could have simplified everything by handling the functional logic at the parent component. Dumb components are usually my preference anyways for better flexibility.
+
 ```js
-const proudOfThisFunc = () => {
-  console.log('🎉')
+export const deleteComment = async (comment, parent) => {
+  // @todo: API call
+  await mockApiCall();
+
+  if (parent) {
+    return deleteReply(comment, parent);
+  }
+
+  const commentIndex = comments.findIndex(({ id }) => id === comment.id);
+  if (commentIndex === -1) {
+    return Promise.reject(new Error("This comment has already been deleted"));
+  }
+
+  comments.splice(commentIndex, 1);
+
+  persistLocalStorage();
+
+  return Promise.resolve();
+};
+```
+
+Modal and background scrolling has always been a challenge. Generally I would reach for the popular npm package [body-scroll-lock](https://www.npmjs.com/package/body-scroll-lock), but I really liked the simplicity of how [tailwindcss](https://tailwindcss.com/) approached it (pretty classic, even!);
+
+```javascript
+watch(
+  () => props.show,
+  (value) => {
+    if (value) {
+      document.querySelector("body").classList.add("modal--active");
+    } else {
+      document.querySelector("body").classList.remove("modal--active");
+    }
+  }
+);
+```
+
+```css
+.modal--active {
+  overflow: hidden !important;
 }
 ```
 
-If you want more help with writing markdown, we'd recommend checking out [The Markdown Guide](https://www.markdownguide.org/) to learn more.
-
-**Note: Delete this note and the content within this section and replace with your own learnings.**
-
-### Continued development
-
-Use this section to outline areas that you want to continue focusing on in future projects. These could be concepts you're still not completely comfortable with or techniques you found useful that you want to refine and perfect.
-
-**Note: Delete this note and the content within this section and replace with your own plans for continued development.**
-
-### Useful resources
-
-- [Example resource 1](https://www.example.com) - This helped me for XYZ reason. I really liked this pattern and will use it going forward.
-- [Example resource 2](https://www.example.com) - This is an amazing article which helped me finally understand XYZ. I'd recommend it to anyone still learning this concept.
-
-**Note: Delete this note and replace the list above with resources that helped you during the challenge. These could come in handy for anyone viewing your solution or for yourself when you look back on this project in the future.**
+I used the provided sketch document to try to match everything pixel perfect. In a real project I think I would prefer to use `rem` instead of `px`. If there's a plugin for sketch that translates pixels to `rem` I would love to check it out!
 
 ## Author
 
-- Website - [Add your name here](https://www.your-site.com)
-- Frontend Mentor - [@yourusername](https://www.frontendmentor.io/profile/yourusername)
-- Twitter - [@yourusername](https://www.twitter.com/yourusername)
-
-**Note: Delete this note and add/remove/edit lines above based on what links you'd like to share.**
-
-## Acknowledgments
-
-This is where you can give a hat tip to anyone who helped you out on this project. Perhaps you worked in a team or got some inspiration from someone else's solution. This is the perfect place to give them some credit.
-
-**Note: Delete this note and edit this section's content as necessary. If you completed this challenge by yourself, feel free to delete this section entirely.**
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+- Frontend Mentor - [@@cjcrawford](https://www.frontendmentor.io/profile/cjcrawford)
